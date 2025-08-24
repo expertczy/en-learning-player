@@ -21,7 +21,7 @@ A modern web application for learning English through videos with bilingual subt
 
 1. **Clone the repository**
    ```bash
-   git clone [<repository-url>](https://github.com/expertczy/en-learning-player)
+   git clone https://github.com/expertczy/en-learning-player
    cd en-learning-player
    ```
 
