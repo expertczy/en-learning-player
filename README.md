@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# English Learning Player
 
-## Getting Started
+A modern web application for learning English through videos with bilingual subtitles. Perfect for language learners who want to improve their English skills by watching movies, TV shows, or educational content with synchronized English and Chinese subtitles.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 🎨 User Interface
+- **Modern Material-UI design** - Clean, responsive interface
+- **Dark video player** - Optimal viewing environment
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Technology Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Frontend Framework**: Next.js 15.2.4 with React 19
+- **UI Library**: Material-UI (MUI) 7.0.1
+- **Video Player**: React Player 2.16.0
+- **Styling**: Tailwind CSS 4 + Emotion
+- **Language**: TypeScript 5
+- **Build Tool**: Turbopack (Next.js)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📦 Installation
 
-## Learn More
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd en-learning-player
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Run the development server**
+   ```bash
+   npm run dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
-## Deploy on Vercel
+## 🎮 How to Use
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Getting Started
+1. **Upload a video** - Click "Upload Video" and select your video file
+2. **Upload subtitles** - Click "Upload Subtitle" and select your SRT or ASS subtitle file
+3. **Start learning** - The video player and subtitle display will appear
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Video Controls
+- **Play/Pause**: Click the video or use the spacebar
+- **Seek**: Use the timeline slider or arrow keys (left/right for 5-second skips)
+- **Fullscreen**: Double-click the video or use the fullscreen button
+- **Replay sentence**: Click the loop button to replay the current subtitle
+- **Auto-stop**: Toggle "Stop at sentence end" to pause after each subtitle
+
+### Subtitle Management
+- **Show/hide languages**: Toggle English or Chinese subtitle display
+- **Automatic detection**: The app automatically separates bilingual subtitle files
+- **Format support**: Works with both SRT and ASS subtitle formats
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+
+**Happy Learning!** 🎓 Improve your English skills one subtitle at a time.
