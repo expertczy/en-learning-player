@@ -8,6 +8,7 @@ interface FileData {
   name: string;
   url: string;
   type: string;
+  file: File;
 }
 
 interface ProcessedData {

@@ -44,10 +44,8 @@ export default function SubtitleDisplay({ hideUploadButtons = false }: SubtitleD
       let filesToProcess = newFiles;
       
       if (fileType === 'subtitle' && mediaData.video) {
-        // Keep the existing video and add the new subtitle
-        const videoBlob = await fetch(mediaData.video.url).then(r => r.blob());
-        const videoFile = new File([videoBlob], mediaData.video.name, { type: mediaData.video.type });
-        filesToProcess = [...newFiles, videoFile];
+        // Use the stored File object directly
+        filesToProcess = [...newFiles, mediaData.video.file];
       }
       
       const processed = await handleFiles(filesToProcess);

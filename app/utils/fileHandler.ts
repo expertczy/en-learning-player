@@ -4,6 +4,7 @@ export interface FileData {
   name: string;
   url: string;
   type: string;
+  file: File;
 }
 
 export interface ProcessedData {
@@ -27,7 +28,8 @@ export async function handleFiles(files: File[]): Promise<ProcessedData> {
     const fileData: FileData = {
       name: file.name,
       url,
-      type: file.type
+      type: file.type,
+      file: file
     };
 
     if (file.name.endsWith('.mkv') || file.type.startsWith('video/')) {

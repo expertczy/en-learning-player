@@ -18,8 +18,7 @@ import PauseIcon from '@mui/icons-material/Pause';
 import ReplayIcon from '@mui/icons-material/Replay';
 import Forward5Icon from '@mui/icons-material/Forward5';
 import Replay5Icon from '@mui/icons-material/Replay5';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
+
 import LoopIcon from '@mui/icons-material/Loop';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
@@ -324,68 +323,7 @@ export default function VideoPlayer({ onReset }: VideoPlayerProps) {
     };
   }, [isPlaying, currentTime]); // Re-attach when these change
 
-  // Sentence navigation
-  const handleNextSentence = () => {
-    if (!mediaData.subtitles?.english || !playerRef.current) return;
-    
-    const subtitles = mediaData.subtitles.english;
-    
-    // Find the next subtitle after current time
-    const nextSub = subtitles.find(
-      (sub: Subtitle) => sub.startTime > currentTime
-    );
-    
-    if (nextSub) {
-      playerRef.current.seekTo(nextSub.startTime);
-      setCurrentTime(nextSub.startTime);
-      setLocalTime(nextSub.startTime);
-      
-      // Reset the last processed subtitle
-      currentSubtitleIdRef.current = null;
-      
-      // Start playing if not already
-      if (!isPlaying) {
-        setIsPlaying(true);
-      }
-    }
-  };
 
-  const handlePrevSentence = () => {
-    if (!mediaData.subtitles?.english || !playerRef.current) return;
-    
-    const subtitles = mediaData.subtitles.english;
-    
-    // Find current subtitle
-    const currentSub = subtitles.find(
-      (sub: Subtitle) => currentTime >= sub.startTime && currentTime <= sub.endTime
-    );
-    
-    // If we're in a subtitle and not near the beginning, go to its start
-    if (currentSub && currentTime > currentSub.startTime + 0.5) {
-      playerRef.current.seekTo(currentSub.startTime);
-      setCurrentTime(currentSub.startTime);
-      setLocalTime(currentSub.startTime);
-      currentSubtitleIdRef.current = null;
-      return;
-    }
-    
-    // Otherwise, find the previous subtitle
-    const prevSub = [...subtitles]
-      .reverse()
-      .find(sub => sub.endTime < currentTime);
-    
-    if (prevSub) {
-      playerRef.current.seekTo(prevSub.startTime);
-      setCurrentTime(prevSub.startTime);
-      setLocalTime(prevSub.startTime);
-      currentSubtitleIdRef.current = null;
-      
-      // Start playing if not already
-      if (!isPlaying) {
-        setIsPlaying(true);
-      }
-    }
-  };
 
   // Simple toggle for stop at sentence end
   const toggleSentenceStop = () => {
@@ -540,17 +478,8 @@ export default function VideoPlayer({ onReset }: VideoPlayerProps) {
                   <Replay5Icon />
                 </IconButton>
                 
-                {/* Sentence navigation controls */}
-                <IconButton onClick={handlePrevSentence} size="small" sx={{ color: 'white' }}>
-                  <SkipPreviousIcon />
-                </IconButton>
-                
                 <IconButton onClick={handlePlayPause} color="primary" size="medium">
                   {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
-                </IconButton>
-                
-                <IconButton onClick={handleNextSentence} size="small" sx={{ color: 'white' }}>
-                  <SkipNextIcon />
                 </IconButton>
                 
                 <IconButton onClick={handleSkipForward} size="small" sx={{ color: 'white' }}>

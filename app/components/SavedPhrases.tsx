@@ -13,7 +13,7 @@ import {
   Card,
   CardContent,
   Button,
-  Stack,
+
   Tabs,
   Tab
 } from '@mui/material';
@@ -42,11 +42,11 @@ export default function SavedPhrases() {
     removePhrase(timestamp);
   };
 
-  // Shuffle the order for quiz mode
+  // Shuffle the order for quiz mode - cycles through cards randomly
   const handleShuffle = () => {
-    setCurrentCardIndex(0);
+    const randomIndex = Math.floor(Math.random() * savedPhrases.length);
+    setCurrentCardIndex(randomIndex);
     setCardState('question');
-    // Shuffling happens via random selection in the rendering
   };
 
   // Switch between viewing modes
@@ -56,26 +56,19 @@ export default function SavedPhrases() {
     setCardState('question');
   };
 
-  // Toggle flashcard display
+  // Toggle flashcard display and cycle to next card when showing answer
   const handleCardClick = () => {
-    setCardState(cardState === 'question' ? 'answer' : 'question');
-  };
-
-  // Move to next card
-  const handleNextCard = () => {
-    if (currentCardIndex < savedPhrases.length - 1) {
-      setCurrentCardIndex(currentCardIndex + 1);
+    if (cardState === 'question') {
+      setCardState('answer');
+    } else {
+      // Move to next card or loop back to start
+      const nextIndex = (currentCardIndex + 1) % savedPhrases.length;
+      setCurrentCardIndex(nextIndex);
       setCardState('question');
     }
   };
 
-  // Move to previous card
-  const handlePrevCard = () => {
-    if (currentCardIndex > 0) {
-      setCurrentCardIndex(currentCardIndex - 1);
-      setCardState('question');
-    }
-  };
+
 
   // Toggle between showing English or Chinese first
   const toggleLanguageOrder = () => {
@@ -209,25 +202,9 @@ export default function SavedPhrases() {
                 </CardContent>
               </Card>
               
-              <Stack direction="row" spacing={2} justifyContent="center">
-                <Button 
-                  onClick={handlePrevCard} 
-                  disabled={currentCardIndex === 0}
-                  variant="outlined"
-                >
-                  Previous
-                </Button>
-                <Typography variant="body2" sx={{ alignSelf: 'center' }}>
-                  {currentCardIndex + 1} / {savedPhrases.length}
-                </Typography>
-                <Button 
-                  onClick={handleNextCard} 
-                  disabled={currentCardIndex === savedPhrases.length - 1}
-                  variant="outlined"
-                >
-                  Next
-                </Button>
-              </Stack>
+              <Typography variant="body2" sx={{ textAlign: 'center' }}>
+                {currentCardIndex + 1} / {savedPhrases.length}
+              </Typography>
             </>
           )}
         </Box>
