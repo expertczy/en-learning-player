@@ -7,7 +7,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import VideoPlayer from './components/VideoPlayer';
 import SubtitleDisplay from './components/SubtitleDisplay';
 import { useAppContext } from './context/AppContext';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { handleFiles } from './utils/fileHandler';
 
 // Create a theme with dark mode and true black background
@@ -30,8 +30,14 @@ const theme = createTheme({
 export default function Home() {
   const { mediaData, setMediaData } = useAppContext();
   const [uploading, setUploading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const subtitleInputRef = useRef<HTMLInputElement>(null);
+  
+  // Prevent hydration mismatch by only rendering after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, fileType: 'video' | 'subtitle') => {
     console.log('[page] handleFileChange called, fileType:', fileType);
@@ -81,6 +87,17 @@ export default function Home() {
   
   // Only proceed to player when we have video AND complete bilingual subtitles
   const hasRequiredFiles = mediaData.video && mediaData.subtitles && !mediaData.subtitles.missingLanguage;
+  
+  // Prevent hydration mismatch - show nothing until client-side mount
+  if (!mounted) {
+    return (
+      <div style={{ 
+        width: '100vw', 
+        height: '100vh', 
+        backgroundColor: '#000000' 
+      }} />
+    );
+  }
   
   return (
     <ThemeProvider theme={theme}>
