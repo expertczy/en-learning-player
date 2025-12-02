@@ -2,14 +2,13 @@
 
 import React, { useState, useRef } from 'react';
 import { Button, Box, Typography, Paper, Stack, CircularProgress } from '@mui/material';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import MovieIcon from '@mui/icons-material/Movie';
 import SubtitlesIcon from '@mui/icons-material/Subtitles';
 import { useAppContext } from '../context/AppContext';
 import { handleFiles } from '../utils/fileHandler';
 
 export default function FileUploader() {
-  const { setMediaData } = useAppContext();
+  const { mediaData, setMediaData } = useAppContext();
   const videoInputRef = useRef<HTMLInputElement>(null);
   const subtitleInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -41,48 +40,14 @@ export default function FileUploader() {
         }));
       }
       
-      // Combine with existing files if needed
-      let filesToProcess = files;
-      if (uploadedFiles.video && fileType === 'subtitle') {
-        // Try to find the video file by name in the existing data
-        const existingVideoFile = await findFileByName(uploadedFiles.video);
-        if (existingVideoFile) {
-          filesToProcess = [...files, existingVideoFile];
-        }
-      } else if (uploadedFiles.subtitle && fileType === 'video') {
-        // Try to find the subtitle file by name in the existing data
-        const existingSubtitleFile = await findFileByName(uploadedFiles.subtitle);
-        if (existingSubtitleFile) {
-          filesToProcess = [...files, existingSubtitleFile];
-        }
-      }
-      
-      const processed = await handleFiles(filesToProcess);
+      // Pass existing mediaData to support merging subtitles
+      const processed = await handleFiles(files, mediaData);
       setMediaData(processed);
     } catch (error) {
       console.error('Error processing files:', error);
     } finally {
       setUploading(false);
     }
-  };
-
-  // Helper function to find a file by name in the file input elements
-  const findFileByName = async (fileName: string): Promise<File | null> => {
-    // Look in video input
-    if (videoInputRef.current && videoInputRef.current.files && videoInputRef.current.files.length > 0) {
-      const files = Array.from(videoInputRef.current.files);
-      const match = files.find(file => file.name === fileName);
-      if (match) return match;
-    }
-    
-    // Look in subtitle input
-    if (subtitleInputRef.current && subtitleInputRef.current.files && subtitleInputRef.current.files.length > 0) {
-      const files = Array.from(subtitleInputRef.current.files);
-      const match = files.find(file => file.name === fileName);
-      if (match) return match;
-    }
-    
-    return null;
   };
 
   const triggerVideoInput = () => {
@@ -181,6 +146,22 @@ export default function FileUploader() {
                 ? "Both video and subtitle files are ready for learning!" 
                 : "Please upload both video and subtitle files to get started."}
             </Typography>
+            
+            {/* Show missing language prompt */}
+            {mediaData.subtitles?.missingLanguage && (
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  mt: 1, 
+                  color: 'warning.main',
+                  fontWeight: 'medium'
+                }}
+              >
+                ⚠️ {mediaData.subtitles.missingLanguage === 'chinese' 
+                  ? '检测到纯英文字幕，请再次点击上方按钮上传中文字幕' 
+                  : '检测到纯中文字幕，请再次点击上方按钮上传英文字幕'}
+              </Typography>
+            )}
           </Box>
         )}
       </Stack>

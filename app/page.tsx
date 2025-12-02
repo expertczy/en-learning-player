@@ -34,24 +34,26 @@ export default function Home() {
   const subtitleInputRef = useRef<HTMLInputElement>(null);
   
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, fileType: 'video' | 'subtitle') => {
-    if (!e.target.files || e.target.files.length === 0) return;
+    console.log('[page] handleFileChange called, fileType:', fileType);
+    if (!e.target.files || e.target.files.length === 0) {
+      console.log('[page] No files selected');
+      return;
+    }
     
     setUploading(true);
     try {
       const newFiles = Array.from(e.target.files);
+      console.log('[page] Files to process:', newFiles.map(f => f.name));
+      console.log('[page] Current mediaData:', mediaData);
       
-      // Combine with existing files if needed
-      let filesToProcess = newFiles;
-      
-      if (fileType === 'subtitle' && mediaData.video) {
-        // Use the stored File object directly
-        filesToProcess = [...newFiles, mediaData.video.file];
-      }
-      
-      const processed = await handleFiles(filesToProcess);
+      // Pass existing mediaData to support merging subtitles
+      const processed = await handleFiles(newFiles, mediaData);
+      console.log('[page] Processed result:', processed);
+      console.log('[page] Setting mediaData...');
       setMediaData(processed);
+      console.log('[page] mediaData set complete');
     } catch (error) {
-      console.error('Error processing files:', error);
+      console.error('[page] Error processing files:', error);
     } finally {
       setUploading(false);
     }
@@ -77,7 +79,8 @@ export default function Home() {
     });
   };
   
-  const hasRequiredFiles = mediaData.video && mediaData.subtitles;
+  // Only proceed to player when we have video AND complete bilingual subtitles
+  const hasRequiredFiles = mediaData.video && mediaData.subtitles && !mediaData.subtitles.missingLanguage;
   
   return (
     <ThemeProvider theme={theme}>
@@ -162,11 +165,30 @@ export default function Home() {
             </Stack>
             
             {/* Only show file names when files are uploaded */}
-            {(mediaData.video || mediaData.subtitles) && (
+            {mediaData.video && (
               <Typography variant="body2" color="text.secondary">
-                {mediaData.video && `Video: ${mediaData.video.name}`}
-                {mediaData.video && mediaData.subtitles && <br />}
-                {mediaData.subtitles && 'Subtitle file loaded'}
+                Video: {mediaData.video.name}
+              </Typography>
+            )}
+            {mediaData.subtitles && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                Subtitle file loaded
+              </Typography>
+            )}
+            
+            {/* Show missing language prompt */}
+            {mediaData.subtitles?.missingLanguage && (
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  mt: 2, 
+                  color: 'warning.main',
+                  fontWeight: 'medium'
+                }}
+              >
+                ⚠️ {mediaData.subtitles.missingLanguage === 'chinese' 
+                  ? '检测到纯英文字幕，请再次点击 Upload Subtitle 上传中文字幕' 
+                  : '检测到纯中文字幕，请再次点击 Upload Subtitle 上传英文字幕'}
               </Typography>
             )}
           </Paper>

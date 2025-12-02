@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Subtitle } from '../utils/subtitleParser';
+import { Subtitle, SubtitleLanguage } from '../utils/subtitleParser';
 
 // Define the interfaces needed for ProcessedData
 interface FileData {
@@ -11,13 +11,17 @@ interface FileData {
   file: File;
 }
 
+interface SubtitleData {
+  raw: Subtitle[];
+  chinese: Subtitle[];
+  english: Subtitle[];
+  detectedLanguage: SubtitleLanguage;
+  missingLanguage: 'chinese' | 'english' | null;
+}
+
 interface ProcessedData {
   video: FileData | null;
-  subtitles: {
-    raw: Subtitle[];
-    chinese: Subtitle[];
-    english: Subtitle[];
-  } | null;
+  subtitles: SubtitleData | null;
 }
 
 interface AppContextType {

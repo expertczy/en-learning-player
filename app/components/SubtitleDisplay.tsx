@@ -40,15 +40,8 @@ export default function SubtitleDisplay({ hideUploadButtons = false }: SubtitleD
     try {
       const newFiles = Array.from(e.target.files);
       
-      // Combine with existing files if needed
-      let filesToProcess = newFiles;
-      
-      if (fileType === 'subtitle' && mediaData.video) {
-        // Use the stored File object directly
-        filesToProcess = [...newFiles, mediaData.video.file];
-      }
-      
-      const processed = await handleFiles(filesToProcess);
+      // Pass existing mediaData to support merging subtitles
+      const processed = await handleFiles(newFiles, mediaData);
       setMediaData(processed);
     } catch (error) {
       console.error('Error processing files:', error);
@@ -193,12 +186,14 @@ export default function SubtitleDisplay({ hideUploadButtons = false }: SubtitleD
               <Typography 
                 variant="body1" 
                 align="center" 
-                color="text.secondary"
+                color={mediaData.subtitles?.missingLanguage === 'english' ? 'warning.main' : 'text.secondary'}
               >
                 {showEnglish 
-                  ? (mediaData.video 
-                      ? 'English subtitle will appear here' 
-                      : 'Please upload video and subtitle files') 
+                  ? (mediaData.subtitles?.missingLanguage === 'english'
+                      ? '⚠️ 请点击 Subtitle 按钮上传英文字幕'
+                      : (mediaData.video 
+                          ? 'English subtitle will appear here' 
+                          : 'Please upload video and subtitle files'))
                   : 'Click to show English'}
               </Typography>
             )}
@@ -249,12 +244,14 @@ export default function SubtitleDisplay({ hideUploadButtons = false }: SubtitleD
               <Typography 
                 variant="body1" 
                 align="center" 
-                color="text.secondary"
+                color={mediaData.subtitles?.missingLanguage === 'chinese' ? 'warning.main' : 'text.secondary'}
               >
                 {showChinese 
-                  ? (mediaData.video 
-                      ? 'Chinese subtitle will appear here' 
-                      : hideUploadButtons ? 'Please wait for subtitles' : 'Press the buttons at left to upload files') 
+                  ? (mediaData.subtitles?.missingLanguage === 'chinese'
+                      ? '⚠️ 请点击 Subtitle 按钮上传中文字幕'
+                      : (mediaData.video 
+                          ? 'Chinese subtitle will appear here' 
+                          : hideUploadButtons ? 'Please wait for subtitles' : 'Press the buttons at left to upload files'))
                   : 'Click to show Chinese'}
               </Typography>
             )}

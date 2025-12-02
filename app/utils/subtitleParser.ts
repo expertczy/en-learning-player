@@ -186,4 +186,124 @@ export function secondsToTime(seconds: number): string {
 // Helper function for padding numbers with leading zeros
 function pad(num: number, length = 2): string {
   return num.toString().padStart(length, '0');
+}
+
+// Type for subtitle language detection result
+export type SubtitleLanguage = 'chinese' | 'english' | 'bilingual' | 'unknown';
+
+// Function to detect the language of subtitles
+export function detectSubtitleLanguage(subtitles: Subtitle[]): SubtitleLanguage {
+  console.log('[detectSubtitleLanguage] Total subtitles:', subtitles.length);
+  if (subtitles.length === 0) return 'unknown';
+  
+  let hasChineseOnly = 0;
+  let hasEnglishOnly = 0;
+  let hasBilingual = 0;
+  
+  const chineseRegex = /[\u4e00-\u9fff]/;
+  const englishRegex = /[a-zA-Z]/;
+  
+  for (const subtitle of subtitles) {
+    const lines = subtitle.text.split(/\r?\n/);
+    const text = subtitle.text;
+    
+    const containsChinese = chineseRegex.test(text);
+    const containsEnglish = englishRegex.test(text);
+    
+    // Check if this subtitle has multiple lines (potential bilingual)
+    if (lines.length >= 2) {
+      const firstLineHasChinese = chineseRegex.test(lines[0]);
+      const secondLineHasEnglish = englishRegex.test(lines[1]) && !chineseRegex.test(lines[1]);
+      
+      if (firstLineHasChinese && secondLineHasEnglish) {
+        hasBilingual++;
+        continue;
+      }
+    }
+    
+    if (containsChinese && !containsEnglish) {
+      hasChineseOnly++;
+    } else if (containsEnglish && !containsChinese) {
+      hasEnglishOnly++;
+    } else if (containsChinese && containsEnglish) {
+      // Single line with both - likely bilingual or mixed
+      hasBilingual++;
+    }
+  }
+  
+  const total = subtitles.length;
+  const bilingualRatio = hasBilingual / total;
+  const chineseRatio = hasChineseOnly / total;
+  const englishRatio = hasEnglishOnly / total;
+  
+  console.log('[detectSubtitleLanguage] Stats:', {
+    total,
+    hasChineseOnly,
+    hasEnglishOnly,
+    hasBilingual,
+    chineseRatio: chineseRatio.toFixed(2),
+    englishRatio: englishRatio.toFixed(2),
+    bilingualRatio: bilingualRatio.toFixed(2)
+  });
+  
+  // If more than 50% are bilingual format, consider it bilingual
+  if (bilingualRatio > 0.5) {
+    console.log('[detectSubtitleLanguage] Result: bilingual (>50% bilingual)');
+    return 'bilingual';
+  }
+  
+  // If predominantly one language (>70%)
+  if (chineseRatio > 0.7) {
+    console.log('[detectSubtitleLanguage] Result: chinese (>70%)');
+    return 'chinese';
+  }
+  if (englishRatio > 0.7) {
+    console.log('[detectSubtitleLanguage] Result: english (>70%)');
+    return 'english';
+  }
+  
+  // If mixed but not in bilingual format, still try to treat as bilingual
+  if (chineseRatio > 0.3 && englishRatio > 0.3) {
+    console.log('[detectSubtitleLanguage] Result: bilingual (mixed 30%+)');
+    return 'bilingual';
+  }
+  
+  // Default cases
+  if (chineseRatio > englishRatio) {
+    console.log('[detectSubtitleLanguage] Result: chinese (default)');
+    return 'chinese';
+  }
+  if (englishRatio > chineseRatio) {
+    console.log('[detectSubtitleLanguage] Result: english (default)');
+    return 'english';
+  }
+  
+  console.log('[detectSubtitleLanguage] Result: unknown');
+  return 'unknown';
+}
+
+// Function to extract single language subtitles
+export function extractSingleLanguage(subtitles: Subtitle[], language: 'chinese' | 'english'): Subtitle[] {
+  const chineseRegex = /[\u4e00-\u9fff]/;
+  
+  return subtitles.map(subtitle => {
+    const lines = subtitle.text.split(/\r?\n/);
+    
+    if (lines.length >= 2) {
+      // Multi-line: first line is usually Chinese, second is English
+      const text = language === 'chinese' ? lines[0] : lines[1];
+      return { ...subtitle, text };
+    }
+    
+    // Single line: return as is if it matches the language
+    const containsChinese = chineseRegex.test(subtitle.text);
+    if (language === 'chinese' && containsChinese) {
+      return subtitle;
+    }
+    if (language === 'english' && !containsChinese) {
+      return subtitle;
+    }
+    
+    return subtitle;
+  });
 } 
