@@ -1,7 +1,7 @@
 # English Learning Player
 
 A modern web application for learning English through videos with bilingual subtitles. Perfect for language learners who want to improve their English skills by watching movies, TV shows, or educational content with synchronized English and Chinese subtitles.
-
+![Demo](demo.gif)
 ## 🚀 Features
 
 ### 🎨 User Interface
