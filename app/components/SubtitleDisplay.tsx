@@ -34,12 +34,13 @@ export default function SubtitleDisplay({ hideUploadButtons = false }: SubtitleD
   const [uploading, setUploading] = useState(false);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, fileType: 'video' | 'subtitle') => {
-    if (!e.target.files || e.target.files.length === 0) return;
+    const inputEl = e.target;
+    const newFiles = inputEl.files ? Array.from(inputEl.files) : [];
+    inputEl.value = '';
+    if (newFiles.length === 0) return;
     
     setUploading(true);
     try {
-      const newFiles = Array.from(e.target.files);
-      
       // Pass existing mediaData to support merging subtitles
       const processed = await handleFiles(newFiles, mediaData);
       setMediaData(processed);

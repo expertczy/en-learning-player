@@ -21,12 +21,13 @@ export default function FileUploader() {
   });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, fileType: 'video' | 'subtitle') => {
-    if (!e.target.files || e.target.files.length === 0) return;
+    const inputEl = e.target;
+    const files = inputEl.files ? Array.from(inputEl.files) : [];
+    inputEl.value = '';
+    if (files.length === 0) return;
     
     setUploading(true);
     try {
-      const files = Array.from(e.target.files);
-      
       // Update UI with file name based on the type
       if (fileType === 'video') {
         setUploadedFiles(prev => ({

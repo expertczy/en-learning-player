@@ -41,14 +41,19 @@ export default function Home() {
   
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, fileType: 'video' | 'subtitle') => {
     console.log('[page] handleFileChange called, fileType:', fileType);
-    if (!e.target.files || e.target.files.length === 0) {
+    const inputEl = e.target;
+    const selectedFiles = inputEl.files ? Array.from(inputEl.files) : [];
+    // Clear the input so the same file can be uploaded again in either order
+    inputEl.value = '';
+
+    if (selectedFiles.length === 0) {
       console.log('[page] No files selected');
       return;
     }
     
     setUploading(true);
     try {
-      const newFiles = Array.from(e.target.files);
+      const newFiles = selectedFiles;
       console.log('[page] Files to process:', newFiles.map(f => f.name));
       console.log('[page] Current mediaData:', mediaData);
       
@@ -87,6 +92,8 @@ export default function Home() {
   
   // Only proceed to player when we have video AND complete bilingual subtitles
   const hasRequiredFiles = mediaData.video && mediaData.subtitles && !mediaData.subtitles.missingLanguage;
+  const hasSubtitlesOnly = mediaData.subtitles && !mediaData.video;
+  const hasVideoOnly = mediaData.video && (!mediaData.subtitles || mediaData.subtitles.missingLanguage);
   
   // Prevent hydration mismatch - show nothing until client-side mount
   if (!mounted) {
@@ -191,6 +198,42 @@ export default function Home() {
               <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                 Subtitle file loaded
               </Typography>
+            )}
+
+            {/* Guide users who prefer uploading in either order */}
+            {hasSubtitlesOnly && (
+              <Stack spacing={1} sx={{ mt: 2 }}>
+                <Typography variant="body2" color="text.secondary">
+                  字幕已上传，接下来上传视频即可开始播放。
+                </Typography>
+                <Button
+                  variant="outlined"
+                  startIcon={<MovieIcon />}
+                  onClick={triggerVideoInput}
+                  disabled={uploading}
+                  fullWidth
+                >
+                  继续上传视频
+                </Button>
+              </Stack>
+            )}
+
+            {hasVideoOnly && (
+              <Stack spacing={1} sx={{ mt: 2 }}>
+                <Typography variant="body2" color="text.secondary">
+                  视频已上传，请上传字幕（可先字幕后视频）。
+                </Typography>
+                <Button
+                  variant="outlined"
+                  startIcon={<SubtitlesIcon />}
+                  onClick={triggerSubtitleInput}
+                  disabled={uploading}
+                  fullWidth
+                  color="secondary"
+                >
+                  继续上传字幕
+                </Button>
+              </Stack>
             )}
             
             {/* Show missing language prompt */}
