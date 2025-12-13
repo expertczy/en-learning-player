@@ -4,6 +4,8 @@ import { Box, CssBaseline, ThemeProvider, createTheme, Paper, Typography, Button
 import MovieIcon from '@mui/icons-material/Movie';
 import SubtitlesIcon from '@mui/icons-material/Subtitles';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import VideoPlayer from './components/VideoPlayer';
 import SubtitleDisplay from './components/SubtitleDisplay';
 import { useAppContext } from './context/AppContext';
@@ -125,6 +127,7 @@ export default function Home() {
             elevation={4}
             sx={{
               p: 6,
+              pb: 3,
               maxWidth: '600px',
               width: '90%',
               textAlign: 'center',
@@ -188,53 +191,49 @@ export default function Home() {
               </Button>
             </Stack>
             
-            {/* Only show file names when files are uploaded */}
-            {mediaData.video && (
-              <Typography variant="body2" color="text.secondary">
-                Video: {mediaData.video.name}
-              </Typography>
-            )}
-            {mediaData.subtitles && (
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                Subtitle file loaded
-              </Typography>
-            )}
-
-            {/* Guide users who prefer uploading in either order */}
-            {hasSubtitlesOnly && (
-              <Stack spacing={1} sx={{ mt: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  字幕已上传，接下来上传视频即可开始播放。
-                </Typography>
-                <Button
-                  variant="outlined"
-                  startIcon={<MovieIcon />}
-                  onClick={triggerVideoInput}
-                  disabled={uploading}
-                  fullWidth
-                >
-                  继续上传视频
-                </Button>
-              </Stack>
-            )}
-
-            {hasVideoOnly && (
-              <Stack spacing={1} sx={{ mt: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  视频已上传，请上传字幕（可先字幕后视频）。
-                </Typography>
-                <Button
-                  variant="outlined"
-                  startIcon={<SubtitlesIcon />}
-                  onClick={triggerSubtitleInput}
-                  disabled={uploading}
-                  fullWidth
-                  color="secondary"
-                >
-                  继续上传字幕
-                </Button>
-              </Stack>
-            )}
+            {/* Upload status display */}
+            <Stack spacing={1} sx={{ mt: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                {mediaData.video ? (
+                  <>
+                    <CheckCircleIcon sx={{ color: 'success.main', fontSize: 20 }} />
+                    <Typography variant="body2" color="success.main">
+                      视频已上传: {mediaData.video.name}
+                    </Typography>
+                  </>
+                ) : (
+                  <>
+                    <CancelIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+                    <Typography variant="body2" color="text.secondary">
+                      视频未上传
+                    </Typography>
+                  </>
+                )}
+              </Box>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                {mediaData.subtitles && (mediaData.subtitles.chinese.length > 0 || mediaData.subtitles.english.length > 0) ? (
+                  <>
+                    <CheckCircleIcon sx={{ color: 'success.main', fontSize: 20 }} />
+                    <Typography variant="body2" color="success.main" sx={{ maxWidth: '400px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      字幕已上传{mediaData.subtitles.fileName ? `: ${mediaData.subtitles.fileName}` : ''}
+                      {mediaData.subtitles.missingLanguage && (
+                        <span style={{ marginLeft: '8px', color: 'warning.main' }}>
+                          {mediaData.subtitles.missingLanguage === 'chinese' ? '(仅英文)' : '(仅中文)'}
+                        </span>
+                      )}
+                    </Typography>
+                  </>
+                ) : (
+                  <>
+                    <CancelIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+                    <Typography variant="body2" color="text.secondary">
+                      字幕未上传
+                    </Typography>
+                  </>
+                )}
+              </Box>
+            </Stack>
             
             {/* Show missing language prompt */}
             {mediaData.subtitles?.missingLanguage && (

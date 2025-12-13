@@ -17,6 +17,7 @@ interface SubtitleData {
   english: Subtitle[];
   detectedLanguage: SubtitleLanguage;
   missingLanguage: 'chinese' | 'english' | null;
+  fileName?: string;
 }
 
 interface ProcessedData {

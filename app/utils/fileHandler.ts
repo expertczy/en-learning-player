@@ -13,6 +13,7 @@ export interface SubtitleData {
   english: Subtitle[];
   detectedLanguage: SubtitleLanguage;
   missingLanguage: 'chinese' | 'english' | null;
+  fileName?: string; // Store the subtitle file name
 }
 
 export interface ProcessedData {
@@ -96,7 +97,8 @@ export async function handleFiles(files: File[], existingData?: ProcessedData): 
             chinese,
             english,
             detectedLanguage: 'bilingual',
-            missingLanguage: null
+            missingLanguage: null,
+            fileName: result.subtitles.fileName || file.name
           };
         } else {
           // New subtitle is same language as existing, replace
@@ -106,7 +108,8 @@ export async function handleFiles(files: File[], existingData?: ProcessedData): 
               chinese: parsedSubtitles,
               english: [],
               detectedLanguage: 'chinese',
-              missingLanguage: 'english'
+              missingLanguage: 'english',
+              fileName: file.name
             };
           } else if (newLang === 'english') {
             result.subtitles = {
@@ -114,7 +117,8 @@ export async function handleFiles(files: File[], existingData?: ProcessedData): 
               chinese: [],
               english: parsedSubtitles,
               detectedLanguage: 'english',
-              missingLanguage: 'chinese'
+              missingLanguage: 'chinese',
+              fileName: file.name
             };
           }
         }
@@ -130,7 +134,8 @@ export async function handleFiles(files: File[], existingData?: ProcessedData): 
             chinese,
             english,
             detectedLanguage: 'bilingual',
-            missingLanguage: null
+            missingLanguage: null,
+            fileName: file.name
           };
         } else if (detectedLanguage === 'chinese') {
           console.log('[handleFiles] Chinese only subtitle');
@@ -139,7 +144,8 @@ export async function handleFiles(files: File[], existingData?: ProcessedData): 
             chinese: parsedSubtitles,
             english: [],
             detectedLanguage: 'chinese',
-            missingLanguage: 'english'
+            missingLanguage: 'english',
+            fileName: file.name
           };
         } else if (detectedLanguage === 'english') {
           console.log('[handleFiles] English only subtitle');
@@ -148,7 +154,8 @@ export async function handleFiles(files: File[], existingData?: ProcessedData): 
             chinese: [],
             english: parsedSubtitles,
             detectedLanguage: 'english',
-            missingLanguage: 'chinese'
+            missingLanguage: 'chinese',
+            fileName: file.name
           };
         } else {
           // Unknown language, treat as bilingual and try to separate
@@ -160,7 +167,8 @@ export async function handleFiles(files: File[], existingData?: ProcessedData): 
             chinese,
             english,
             detectedLanguage: 'unknown',
-            missingLanguage: chinese.length === 0 ? 'chinese' : (english.length === 0 ? 'english' : null)
+            missingLanguage: chinese.length === 0 ? 'chinese' : (english.length === 0 ? 'english' : null),
+            fileName: file.name
           };
         }
       }
